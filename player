@@ -1,28 +1,41 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class SpawnObstacle : MonoBehaviour
+public class Player : MonoBehaviour
 {
-    public GameObject obstacle;
-    public float maxX;
-    public float minX;
-    public float maxY;
-    public float minY;
-    public float timeBetweenSpawn;
-    public float spawnTime;
-    void Update()
-    {
-        if(Time.time > spawnTime)
-        {
-            Spawn();
-            spawnTime = Time.time + timeBetweenSpawn;
-        }
-    }
+     public float moveSpeed;
+     Rigidbody2D rb;
 
-    // Update is called once per frame
-    void Spawn()
+     void Start()
+     {
+        rb = GetComponent<Rigidbody2D>();
+     }
+
+     void Update()
+     {
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            if (touchPos.x < 0)
+            {
+                rb.AddForce(Vector2.left * moveSpeed);
+            }
+            else
+            {
+                rb.AddForce(Vector2.right * moveSpeed);
+            }
+        }
+        else
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+     }
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        float randomX = Random.Range(minX, maxX);
-        float randomY = Random.Range(minY, maxY);
-        Instantiate(obstacle, transform.position + new Vector3(randomX, randomY, 0), transform.rotation);
+        if(collision.gameObject.tag == "Block")
+        {
+            SceneManager.LoadScene("Game");
+        }
     }
 }
